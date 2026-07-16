@@ -1,8 +1,8 @@
-# 1. Create the Kiosk User account with the password "Kiosk" (Saves it if it wasn't already)
+# 1. Create the Kiosk User account with the password "Kiosk"
 $Password = ConvertTo-SecureString "Kiosk" -AsPlainText -Force
 New-LocalUser -Name "KioskUser" -Password $Password -FullName "Kiosk Account" -ErrorAction SilentlyContinue
 
-# 2. Define the XML Configuration directly into memory
+# 2. Store the XML config in memory (Notice there is NO "Set-Content" file saving here!)
 $xmlContent = @"
 <?xml version="1.0" encoding="utf-8" ?>
 <AssignedAccessConfiguration 
@@ -54,7 +54,7 @@ $xmlContent = @"
 </AssignedAccessConfiguration>
 "@
 
-# 3. Apply the settings directly via WMI without saving a local file
+# 3. Apply the settings to the WMI MDM bridge directly
 $namespaceName = "root\cimv2\mdm\dmmap"
 $className = "MDM_AssignedAccess"
 
