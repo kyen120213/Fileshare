@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Account</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgba(0, 0, 0, 0.6); /* Slightly darkens the lock screen behind it */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .window {
+            width: 400px;
+            background: white;
+            border: 1px solid #707070;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .title-bar {
+            background: #f3f3f3;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5e5;
+            user-select: none;
+        }
+        .title-text {
+            font-size: 13px;
+            color: #333;
+        }
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            color: #555;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-btn:hover {
+            background: #e81123;
+            color: white;
+        }
+        .content {
+            padding: 30px;
+            text-align: center;
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            color: #000;
+            font-size: 18px;
+            font-weight: 400;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 15px;
+            font-weight: bold;
+            border: 1px solid #8f8f8f;
+            background: #e1e1e1;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .btn:hover {
+            background: #e5f1fb;
+            border-color: #0078d7;
+        }
+        .btn-admin {
+            background: #0078d7;
+            color: white;
+            border: 1px solid #005a9e;
+        }
+        .btn-admin:hover {
+            background: #1886df;
+        }
+    </style>
+</head>
+<body>
+
+<div class="window" id="loginWindow">
+    <div class="title-bar">
+        <span class="title-text">Account Quick-Select</span>
+        <button class="close-btn" onclick="closeAndReopen()">✕</button>
+    </div>
+    <div class="content">
+        <h2>Select an account to unlock:</h2>
+        <button class="btn btn-admin" onclick="selectUser('Administrator')">Admin Account</button>
+        <button class="btn" onclick="selectUser('KioskUser')">Kiosk Account</button>
+    </div>
+</div>
+
+<script>
+    // If they click the X, hide the window and instantly show it again
+    function closeAndReopen() {
+        var win = document.getElementById('loginWindow');
+        win.style.display = 'none';
+        
+        setTimeout(function() {
+            win.style.display = 'block';
+        }, 10); // Re-opens in 10 milliseconds (essentially instant!)
+    }
+
+    function selectUser(username) {
+        alert("Selected " + username + ". Please click Sign In on the Windows interface behind this window.");
+        document.getElementById('loginWindow').style.display = 'none';
+    }
+
+    // Disable keyboard shortcuts to close it
+    window.addEventListener('keydown', function(e) {
+        if ((e.altKey && e.keyCode === 115) || e.keyCode === 116) {
+            e.preventDefault();
+        }
+    });
+</script>
+
+</body>
+</html>
