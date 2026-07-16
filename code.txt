@@ -54,20 +54,10 @@ $xmlContent = @"
 </AssignedAccessConfiguration>
 "@
 
-# 3. Securely query or create the WMI Instance (Fixes the null property error)
+# 3. Apply the settings to the WMI MDM bridge (Supported under SYSTEM account)
 $namespaceName = "root\cimv2\mdm\dmmap"
 $className = "MDM_AssignedAccess"
 
 $obj = Get-CimInstance -Namespace $namespaceName -ClassName $className
-
-# If the instance does not exist yet, we create it
-if ($null -eq $obj) {
-    $obj = New-CimInstance -Namespace $namespaceName -ClassName $className -Property @{
-        InstanceID = "AssignedAccess"
-        ParentID = "./Vendor/MSFT"
-    }
-}
-
-# 4. Encode and apply the Configuration
 $obj.Configuration = [System.Net.WebUtility]::HtmlEncode($xmlContent)
 Set-CimInstance -CimInstance $obj
