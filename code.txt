@@ -2,13 +2,12 @@
 $Password = ConvertTo-SecureString "Kiosk" -AsPlainText -Force
 New-LocalUser -Name "KioskUser" -Password $Password -FullName "Kiosk Account"
 
-# 2. Create the Kiosk Configuration File
+# 2. Define the XML Configuration (Office 2024, Chrome & File Explorer)
 $xmlContent = @"
 <?xml version="1.0" encoding="utf-8" ?>
 <AssignedAccessConfiguration 
     xmlns="http://schemas.microsoft.com/AssignedAccess/2017/config"
-    xmlns:rs5="http://schemas.microsoft.com/AssignedAccess/201810/config"
-    xmlns:v3="http://schemas.microsoft.com/AssignedAccess/2020/config">
+    xmlns:rs5="http://schemas.microsoft.com/AssignedAccess/201810/config">
     <Profiles>
         <Profile Id="{9A2A3E78-1B2F-433C-9EFC-6E115FF5E6FF}">
             <AllAppList>
@@ -54,7 +53,10 @@ $xmlContent = @"
     </Configs>
 </AssignedAccessConfiguration>
 "@
-Set-Content -Path "C:\KioskConfig.xml" -Value $xmlContent
 
-# 3. Apply the settings
-Set-AssignedAccess -ConfigurationMarkupFile "C:\KioskConfig.xml"
+# 3. Apply the settings using the WMI Bridge Provider (Required for LTSC 2019/1809)
+$namespaceName = "root\cimv2\mdm\dmmap"
+$className = "MDM_AssignedAccess"
+$obj = Get-CimInstance -Namespace $namespaceName -ClassName $className
+$obj.Configuration = [System.Net.WebUtility]::HtmlEncode($xmlContent)
+Set-CimInstance -CimInstance $obj
