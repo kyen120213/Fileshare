@@ -1,0 +1,60 @@
+# 1. Create the Kiosk User account with the password "Kiosk"
+$Password = ConvertTo-SecureString "Kiosk" -AsPlainText -Force
+New-LocalUser -Name "KioskUser" -Password $Password -FullName "Kiosk Account"
+
+# 2. Create the Kiosk Configuration File
+$xmlContent = @"
+<?xml version="1.0" encoding="utf-8" ?>
+<AssignedAccessConfiguration 
+    xmlns="http://schemas.microsoft.com/AssignedAccess/2017/config"
+    xmlns:rs5="http://schemas.microsoft.com/AssignedAccess/201810/config"
+    xmlns:v3="http://schemas.microsoft.com/AssignedAccess/2020/config">
+    <Profiles>
+        <Profile Id="{9A2A3E78-1B2F-433C-9EFC-6E115FF5E6FF}">
+            <AllAppList>
+                <AllowedApp rs5:Path="C:\Program Files\Google\Chrome\Application\chrome.exe" />
+                <AllowedApp rs5:Path="C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE" />
+                <AllowedApp rs5:Path="C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE" />
+                <AllowedApp rs5:Path="C:\Program Files\Microsoft Office\root\Office16\POWERPNT.EXE" />
+                <AllowedApp rs5:Path="C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE" />
+                <AllowedApp rs5:Path="C:\Program Files\Microsoft Office\root\Office16\ONENOTE.EXE" />
+                <AllowedApp rs5:Path="C:\Windows\explorer.exe" />
+            </AllAppList>
+            
+            <rs5:FileExplorerNamespaceRestrictions>
+                <rs5:AllowedNamespace Name="Downloads" />
+            </rs5:FileExplorerNamespaceRestrictions>
+
+            <StartLayout>
+                <![CDATA[
+                <LayoutModificationTemplate xmlns:defaultlayout="http://schemas.microsoft.com/Start/2014/FullDefaultLayout" xmlns:start="http://schemas.microsoft.com/Start/2014/StartLayout" Version="1" xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification">
+                  <LayoutOptions StartTileGroupCellWidth="6" />
+                  <DefaultLayoutOverride>
+                    <StartLayoutCollection>
+                      <defaultlayout:StartLayout GroupCellWidth="6">
+                        <start:Group Name="Kiosk Apps">
+                          <start:DesktopApplicationTile Size="2x2" Column="0" Row="0" DesktopApplicationID="Chrome" />
+                          <start:DesktopApplicationTile Size="2x2" Column="2" Row="0" DesktopApplicationID="Microsoft.Office.WINWORD.EXE.15" />
+                          <start:DesktopApplicationTile Size="2x2" Column="4" Row="0" DesktopApplicationID="Microsoft.Office.EXCEL.EXE.15" />
+                        </start:Group>
+                      </defaultlayout:StartLayoutCollection>
+                    </StartLayoutCollection>
+                  </DefaultLayoutOverride>
+                </LayoutModificationTemplate>
+                ]]>
+            </StartLayout>
+            <Taskbar ShowTaskbar="true"/>
+        </Profile>
+    </Profiles>
+    <Configs>
+        <Config>
+            <Account>KioskUser</Account>
+            <DefaultProfile Id="{9A2A3E78-1B2F-433C-9EFC-6E115FF5E6FF}"/>
+        </Config>
+    </Configs>
+</AssignedAccessConfiguration>
+"@
+Set-Content -Path "C:\KioskConfig.xml" -Value $xmlContent
+
+# 3. Apply the settings
+Set-AssignedAccess -ConfigurationMarkupFile "C:\KioskConfig.xml"
